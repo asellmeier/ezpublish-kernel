@@ -16,6 +16,7 @@ use eZ\Publish\Core\Persistence\Legacy\User\Role\LimitationConverter;
 use eZ\Publish\Core\Persistence\Legacy\User\Role\LimitationHandler\ObjectStateHandler as ObjectStateLimitationHandler;
 use eZ\Publish\SPI\Persistence;
 use eZ\Publish\SPI\Persistence\User\Role;
+use LogicException;
 
 /**
  * Test case for UserHandlerTest.
@@ -72,16 +73,28 @@ class UserHandlerTest extends TestCase
     protected function getGatewayReturnValue(): array
     {
         return [
-            [
-                'contentobject_id' => self::TEST_USER_ID,
-                'login' => 'kore',
-                'email' => 'kore@example.org',
-                'password_hash' => '1234567890',
-                'password_hash_type' => 2,
-                'is_enabled' => true,
-                'max_login' => 23,
-                'password_updated_at' => 1569229200,
-            ],
+            $this->getDummyUser(
+                self::TEST_USER_ID,
+                'kore',
+                'kore@example.org'
+            ),
+        ];
+    }
+
+    protected function getDummyUser(
+        int $id,
+        string $login,
+        string $email
+    ): array {
+        return [
+            'contentobject_id' => $id,
+            'login' => $login,
+            'email' => $email,
+            'password_hash' => '1234567890',
+            'password_hash_type' => 2,
+            'is_enabled' => true,
+            'max_login' => 23,
+            'password_updated_at' => 1569229200,
         ];
     }
 
@@ -141,6 +154,48 @@ class UserHandlerTest extends TestCase
         );
     }
 
+    public function testLoadMultipleUsersByLogin()
+    {
+        $this->expectException(LogicException::class);
+
+        $gatewayMock = $this
+            ->createMock(User\Gateway\DoctrineDatabase::class);
+
+        $gatewayMock
+            ->method('loadByLogin')
+            ->with('kore')
+            ->willReturn([
+                $this->getDummyUser(self::TEST_USER_ID, 'kore', 'kore@example.org'),
+                $this->getDummyUser(self::TEST_USER_ID + 1, 'kore', 'kore@example.org'),
+            ]);
+
+        $handler = $this->getUserHandler($gatewayMock);
+        $user = $this->getValidUser();
+
+        $handler->loadByLogin($user->login);
+    }
+
+    public function testLoadMultipleUsersByEmail()
+    {
+        $this->expectException(LogicException::class);
+
+        $gatewayMock = $this
+            ->createMock(User\Gateway\DoctrineDatabase::class);
+
+        $gatewayMock
+            ->method('loadByEmail')
+            ->with('kore@example.org')
+            ->willReturn([
+                $this->getDummyUser(self::TEST_USER_ID, 'kore_a', 'kore@example.org'),
+                $this->getDummyUser(self::TEST_USER_ID + 1, 'kore_b', 'kore@example.org'),
+            ]);
+
+        $handler = $this->getUserHandler($gatewayMock);
+        $user = $this->getValidUser();
+
+        $handler->loadByEmail($user->email);
+    }
+
     public function testLoadUserByEmailNotFound()
     {
         $this->expectException(\eZ\Publish\API\Repository\Exceptions\NotFoundException::class);
@@ -162,9 +217,29 @@ class UserHandlerTest extends TestCase
             ->willReturn($this->getGatewayReturnValue());
 
         $handler = $this->getUserHandler($gatewayMock);
+        $validUser = $this->getValidUser();
+
+        $user = $handler->loadByEmail($validUser->email);
+        $this->assertEquals(
+            $validUser,
+            $user
+        );
+    }
+
+    public function testLoadUsersByEmail()
+    {
+        $gatewayMock = $this
+            ->createMock(User\Gateway\DoctrineDatabase::class);
+
+        $gatewayMock
+            ->method('loadByEmail')
+            ->with('kore@example.org')
+            ->willReturn($this->getGatewayReturnValue());
+
+        $handler = $this->getUserHandler($gatewayMock);
         $user = $this->getValidUser();
 
-        $users = $handler->loadByEmail($user->email);
+        $users = $handler->loadUsersByEmail($user->email);
         $this->assertEquals(
             $user,
             $users[0]

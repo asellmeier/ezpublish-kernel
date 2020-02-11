@@ -8,7 +8,6 @@
  */
 namespace eZ\Publish\Core\MVC\Symfony\Security\Authentication;
 
-use eZ\Publish\API\Repository\Exceptions\NotFoundException;
 use eZ\Publish\API\Repository\PermissionResolver;
 use eZ\Publish\API\Repository\UserService;
 use eZ\Publish\Core\MVC\Symfony\Security\UserInterface as EzUserInterface;
@@ -51,11 +50,13 @@ class RepositoryAuthenticationProvider extends DaoAuthenticationProvider
 
             $apiUser = $currentUser->getAPIUser();
         } else {
-            try {
-                $apiUser = $this->userService->loadUserByCredentials($token->getUsername(), $token->getCredentials());
-            } catch (NotFoundException $e) {
-                throw new BadCredentialsException('Invalid credentials', 0, $e);
+            $validCredentials = $this->userService->checkUserCredentials($user->getAPIUser(), $token->getCredentials());
+
+            if (!$validCredentials) {
+                throw new BadCredentialsException('Invalid credentials', 0);
             }
+
+            $apiUser = $user->getAPIUser();
         }
 
         // Finally inject current user in the Repository

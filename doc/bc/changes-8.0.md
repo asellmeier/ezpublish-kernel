@@ -243,6 +243,10 @@ Changes affecting version compatibility with former or future versions.
 * Deprecated `viewLocation` and `embedLocation` actions of `ViewController` have been dropped, along with
   related route `_ezpublishLocation`. As stated in controller, use `viewAction` in place of `viewLocation` and
   `embedAction` in place od `embedLocation`.   
+  
+* Deprecated `UserService::loadUserByCredentials` method has been dropped. From now on, we rely on
+  Security package of Symfony framework to provide authenticated user, as it may happen there are
+  different ways of providing users configured in the application (ref.: https://symfony.com/doc/current/security/user_provider.html).
 
 ## Deprecated features
 

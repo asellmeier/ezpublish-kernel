@@ -94,11 +94,9 @@ class UserService implements UserServiceInterface
         return $this->service->loadUser($userId, $prioritizedLanguages);
     }
 
-    public function loadUserByCredentials($login, $password, array $prioritizedLanguages = null)
+    public function checkUserCredentials(User $user, string $credentials): bool
     {
-        $prioritizedLanguages = $this->languageResolver->getPrioritizedLanguages($prioritizedLanguages);
-
-        return $this->service->loadUserByCredentials($login, $password, $prioritizedLanguages);
+        return $this->service->checkUserCredentials($user, $credentials);
     }
 
     public function loadUserByLogin($login, array $prioritizedLanguages = null)
@@ -108,7 +106,14 @@ class UserService implements UserServiceInterface
         return $this->service->loadUserByLogin($login, $prioritizedLanguages);
     }
 
-    public function loadUsersByEmail($email, array $prioritizedLanguages = null)
+    public function loadUserByEmail(string $email, array $prioritizedLanguages = null): User
+    {
+        $prioritizedLanguages = $this->languageResolver->getPrioritizedLanguages($prioritizedLanguages);
+
+        return $this->service->loadUserByEmail($email, $prioritizedLanguages);
+    }
+
+    public function loadUsersByEmail(string $email, array $prioritizedLanguages = null): array
     {
         $prioritizedLanguages = $this->languageResolver->getPrioritizedLanguages($prioritizedLanguages);
 
