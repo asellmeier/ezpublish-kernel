@@ -514,11 +514,11 @@ class DoctrineDatabaseTest extends TestCase
     }
 
     /**
-     * Returns the DoctrineDatabase gateway to test.
+     * Return the DoctrineDatabase gateway implementation to test.
      *
-     * @return \eZ\Publish\Core\Persistence\Legacy\Content\UrlAlias\Gateway\DoctrineDatabase
+     * @throws \Doctrine\DBAL\DBALException
      */
-    protected function getGateway()
+    protected function getGateway(): DoctrineDatabase
     {
         if (!isset($this->gateway)) {
             $databaseHandler = $this->getDatabaseHandler();
@@ -529,7 +529,7 @@ class DoctrineDatabaseTest extends TestCase
                 new LanguageMapper()
             );
             $this->gateway = new DoctrineDatabase(
-                $databaseHandler,
+                $this->getDatabaseConnection(),
                 new LanguageMaskGenerator($languageHandler)
             );
         }
