@@ -158,6 +158,8 @@ interface UserService
      * Since 6.1 login is case-insensitive across all storage engines and database backends, however if login
      * is part of the password hash this method will essentially be case sensitive.
      *
+     * @deprecated since 7.5, authentication may and will (from 8.0) depend on different user providers
+     *
      * @param string $login
      * @param string $password the plain password
      * @param string[] $prioritizedLanguages Used as prioritized language code on translated properties of returned object.
