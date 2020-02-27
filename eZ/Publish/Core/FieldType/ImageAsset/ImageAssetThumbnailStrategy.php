@@ -16,16 +16,28 @@ use eZ\Publish\SPI\Repository\Strategy\ContentThumbnail\Field\ThumbnailStrategy;
 
 class ImageAssetThumbnailStrategy implements ThumbnailStrategy
 {
+    /** @var string */
+    private $fieldTypeIdentifier;
+
     /** @var \eZ\Publish\API\Repository\ContentService */
     private $contentService;
 
     /** @var \eZ\Publish\SPI\Repository\Strategy\ContentThumbnail\ThumbnailStrategy */
     private $thumbnailStrategy;
 
-    public function __construct(ContentThumbnailStrategy $thumbnailStrategy, ContentService $contentService)
-    {
+    public function __construct(
+        string $fieldTypeIdentifier,
+        ContentThumbnailStrategy $thumbnailStrategy,
+        ContentService $contentService
+    ) {
+        $this->fieldTypeIdentifier = $fieldTypeIdentifier;
         $this->contentService = $contentService;
         $this->thumbnailStrategy = $thumbnailStrategy;
+    }
+
+    public function getFieldTypeIdentifier(): ?string
+    {
+        return $this->fieldTypeIdentifier;
     }
 
     public function getThumbnail(Field $field): ?Thumbnail

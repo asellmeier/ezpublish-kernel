@@ -13,5 +13,7 @@ use eZ\Publish\API\Repository\Values\Content\Thumbnail;
 
 interface ThumbnailStrategy
 {
+    public function getFieldTypeIdentifier(): ?string;
+
     public function getThumbnail(Field $field): ?Thumbnail;
 }

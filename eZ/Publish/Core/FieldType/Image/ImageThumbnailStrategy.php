@@ -16,6 +16,9 @@ use eZ\Publish\SPI\Variation\VariationHandler;
 
 class ImageThumbnailStrategy implements ThumbnailStrategy
 {
+    /** @var string */
+    private $fieldTypeIdentifier;
+
     /** @var \eZ\Publish\SPI\Variation\VariationHandler */
     private $variationHandler;
 
@@ -23,11 +26,18 @@ class ImageThumbnailStrategy implements ThumbnailStrategy
     private $variationName;
 
     public function __construct(
+        string $fieldTypeIdentifier,
         VariationHandler $variationHandler,
         string $variationName
     ) {
+        $this->fieldTypeIdentifier = $fieldTypeIdentifier;
         $this->variationHandler = $variationHandler;
         $this->variationName = $variationName;
+    }
+
+    public function getFieldTypeIdentifier(): ?string
+    {
+        return $this->fieldTypeIdentifier;
     }
 
     public function getThumbnail(Field $field): ?Thumbnail
