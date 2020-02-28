@@ -158,7 +158,8 @@ interface UserService
      * Since 6.1 login is case-insensitive across all storage engines and database backends, however if login
      * is part of the password hash this method will essentially be case sensitive.
      *
-     * @deprecated since 7.5, authentication may and will (from 8.0) depend on different user providers
+     * @deprecated since eZ Platform 2.5, will be dropped in the next major version as authentication 
+     *             may depend on various user providers.
      *
      * @param string $login
      * @param string $password the plain password
