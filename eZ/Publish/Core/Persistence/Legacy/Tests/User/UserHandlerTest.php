@@ -331,7 +331,7 @@ class UserHandlerTest extends TestCase
 
         $roleDraft = $handler->createRole($createStruct);
 
-        $this->assertSame('1', $roleDraft->id);
+        $this->assertSame(1, $roleDraft->id);
     }
 
     public function testLoadRole()
