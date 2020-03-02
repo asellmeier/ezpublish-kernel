@@ -1,8 +1,6 @@
 <?php
 
 /**
- * File contains: eZ\Publish\Core\Persistence\Legacy\Tests\User\UserHandlerTest class.
- *
  * @copyright Copyright (C) eZ Systems AS. All rights reserved.
  * @license For full copyright and license information view LICENSE file distributed with this source code.
  */
@@ -15,6 +13,7 @@ use eZ\Publish\Core\Persistence\Legacy\User;
 use eZ\Publish\Core\Persistence\Legacy\User\Role\LimitationConverter;
 use eZ\Publish\Core\Persistence\Legacy\User\Role\LimitationHandler\ObjectStateHandler as ObjectStateLimitationHandler;
 use eZ\Publish\SPI\Persistence;
+use eZ\Publish\SPI\Persistence\User\Handler;
 use eZ\Publish\SPI\Persistence\User\Role;
 
 /**
@@ -24,13 +23,16 @@ class UserHandlerTest extends TestCase
 {
     private const TEST_USER_ID = 42;
 
-    protected function getUserHandler(User\Gateway $userGateway = null)
+    /**
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    protected function getUserHandler(User\Gateway $userGateway = null): Handler
     {
         $dbHandler = $this->getDatabaseHandler();
 
         return new User\Handler(
             $userGateway ?? new User\Gateway\DoctrineDatabase($dbHandler),
-            new User\Role\Gateway\DoctrineDatabase($dbHandler),
+            new User\Role\Gateway\DoctrineDatabase($this->getDatabaseConnection()),
             new User\Mapper(),
             new LimitationConverter([new ObjectStateLimitationHandler($dbHandler)])
         );
