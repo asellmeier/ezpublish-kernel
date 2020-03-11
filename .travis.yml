@@ -68,6 +68,7 @@ branches:
   only:
     - master
     - /^\d.\d+$/
+    - fix-cs-check-for-branch
 
 # setup requirements for running unit/integration/behat tests
 before_install:
