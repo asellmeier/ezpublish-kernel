@@ -5372,9 +5372,8 @@ class UrlAliasHandlerTest extends TestCase
     {
         $languageHandler = $this->getLanguageHandler();
         $languageMaskGenerator = $this->getLanguageMaskGenerator();
-        $databaseHandler = $this->getDatabaseHandler();
         $gateway = new DoctrineDatabase(
-            $databaseHandler,
+            $this->getDatabaseConnection(),
             $languageMaskGenerator
         );
         $mapper = new Mapper($languageMaskGenerator);
